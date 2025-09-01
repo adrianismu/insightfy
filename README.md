@@ -17,12 +17,16 @@
 ## 🖼️ Screenshot Aplikasi
 
 ### Dashboard Utama
-![Dashboard Screenshot](https://via.placeholder.com/800x400/4285f4/ffffff?text=Insightify+Dashboard)
+
+<img width="1893" height="682" alt="image" src="https://github.com/user-attachments/assets/1657d237-8df6-41ca-b582-b50c51cdfe83" />
+
+<img width="1886" height="898" alt="image" src="https://github.com/user-attachments/assets/d4834776-6385-4a6c-88ae-2eac51a52ff1" />
+
 
 *Dashboard menampilkan filter, grafik distribusi sumber berita, dan daftar artikel terkini*
 
 ### Grafik Analitik
-![Chart Screenshot](https://via.placeholder.com/600x300/34a853/ffffff?text=Pie+Chart+Analytics)
+<img width="1880" height="612" alt="image" src="https://github.com/user-attachments/assets/d1a9a4e4-5bb8-43c2-afc6-9d636180f95b" />
 
 *Pie chart yang menunjukkan distribusi berita berdasarkan sumber media*
 
