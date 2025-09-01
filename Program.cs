@@ -1,7 +1,15 @@
+using Insightify.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Add HttpClient for API calls
+builder.Services.AddHttpClient();
+
+// Register NewsApiService for dependency injection
+builder.Services.AddScoped<INewsApiService, NewsApiService>();
 
 var app = builder.Build();
 
