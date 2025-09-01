@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Insightify")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+74c1fdc082520cb4e048d525191cbb4b1e4be96d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+913b6d1de62fb4609396a09129c5f551a7976f4b")]
 [assembly: System.Reflection.AssemblyProductAttribute("Insightify")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Insightify")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
