@@ -1,0 +1,204 @@
+@model Insightify.ViewModels.DashboardViewModel
+@{
+    ViewData["Title"] = "Insightify Dashboard";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="text-center mb-4">📊 Insightify - Dashboard Analitik Berita</h1>
+        </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">🔍 Filter Berita</h5>
+                </div>
+                <div class="card-body">
+                    <form method="get" asp-controller="Dashboard" asp-action="Index">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="country" class="form-label">Negara:</label>
+                                <select id="country" name="country" class="form-select" asp-items="Model.Countries">
+                                    <option value="">Pilih Negara</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="category" class="form-label">Kategori:</label>
+                                <select id="category" name="category" class="form-select" asp-items="Model.Categories">
+                                    <option value="">Pilih Kategori</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-search"></i> Cari Berita
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+    {
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="alert alert-danger" role="alert">
+                    <i class="fas fa-exclamation-triangle"></i> @ViewBag.ErrorMessage
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Chart Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">📈 Distribusi Berita per Sumber</h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center">
+                        <canvas id="sourceChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Articles Section -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">📰 Berita Terkini</h5>
+                    <span class="badge bg-primary">@Model.Articles.Count artikel</span>
+                </div>
+                <div class="card-body">
+                    @if (Model.Articles.Any())
+                    {
+                        <div class="row">
+                            @foreach (var article in Model.Articles)
+                            {
+                                <div class="col-lg-4 col-md-6 mb-4">
+                                    <div class="card h-100 shadow-sm">
+                                        @if (!string.IsNullOrEmpty(article.UrlToImage))
+                                        {
+                                            <img src="@article.UrlToImage" 
+                                                 class="card-img-top" 
+                                                 alt="@article.Title"
+                                                 style="height: 200px; object-fit: cover;"
+                                                 onerror="this.style.display='none'">
+                                        }
+                                        <div class="card-body d-flex flex-column">
+                                            <h6 class="card-title">@article.Title</h6>
+                                            <p class="card-text text-muted small flex-grow-1">
+                                                @(string.IsNullOrEmpty(article.Description) ? "Deskripsi tidak tersedia" : 
+                                                  (article.Description.Length > 100 ? article.Description.Substring(0, 100) + "..." : article.Description))
+                                            </p>
+                                            <div class="mt-auto">
+                                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                                    <small class="text-muted">
+                                                        <i class="fas fa-newspaper"></i> @article.Source?.Name
+                                                    </small>
+                                                    <small class="text-muted">
+                                                        <i class="fas fa-clock"></i> @article.PublishedAt.ToString("dd/MM/yyyy HH:mm")
+                                                    </small>
+                                                </div>
+                                                @if (!string.IsNullOrEmpty(article.Author))
+                                                {
+                                                    <small class="text-muted d-block mb-2">
+                                                        <i class="fas fa-user"></i> @article.Author
+                                                    </small>
+                                                }
+                                                <a href="@article.Url" 
+                                                   target="_blank" 
+                                                   class="btn btn-outline-primary btn-sm w-100">
+                                                    <i class="fas fa-external-link-alt"></i> Baca Selengkapnya
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="fas fa-newspaper fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">Tidak ada berita ditemukan</h5>
+                            <p class="text-muted">Coba ubah filter negara atau kategori</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Include Chart.js from CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set selected values for dropdowns
+        document.getElementById('country').value = '@Model.SelectedCountry';
+        document.getElementById('category').value = '@Model.SelectedCategory';
+
+        // Chart.js implementation
+        const ctx = document.getElementById('sourceChart').getContext('2d');
+        
+        // Parse JSON data from model
+        const chartData = @Html.Raw(Model.SourceChartJsonData);
+        
+        if (chartData && chartData.length > 0) {
+            // Prepare data for Chart.js
+            const labels = chartData.map(item => item.label);
+            const data = chartData.map(item => item.value);
+            
+            // Generate colors for each slice
+            const colors = [
+                '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
+                '#FF9F40', '#FF6384', '#C9CBCF', '#4BC0C0', '#FF6384'
+            ];
+
+            const chart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: colors.slice(0, labels.length),
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Distribusi Berita per Sumber Media'
+                        }
+                    }
+                }
+            });
+        } else {
+            // Show message if no data available
+            const canvas = document.getElementById('sourceChart');
+            const parent = canvas.parentElement;
+            parent.innerHTML = '<p class="text-center text-muted">Tidak ada data untuk ditampilkan dalam grafik</p>';
+        }
+    });
+</script>

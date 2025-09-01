@@ -23,11 +23,12 @@ namespace Insightify.Controllers
                 var newsResponse = await _newsApiService.GetTopHeadlinesAsync(country, category);
 
                 // Mengolah data respons: mengelompokkan artikel berdasarkan nama sumber
-                var sourceGroups = newsResponse.Articles?
+                var articles = newsResponse.Articles ?? new List<Models.DTOs.ArticleDto>();
+                var sourceGroups = articles
                     .Where(a => a.Source?.Name != null)
                     .GroupBy(a => a.Source!.Name)
                     .Select(g => new { Source = g.Key, Count = g.Count() })
-                    .ToList() ?? new List<dynamic>();
+                    .ToList();
 
                 // Mengonversi hasil olahan data grafik menjadi string JSON
                 var chartData = sourceGroups.Select(sg => new { label = sg.Source, value = sg.Count }).ToList();
@@ -36,7 +37,7 @@ namespace Insightify.Controllers
                 // Membuat instance DashboardViewModel
                 var viewModel = new DashboardViewModel
                 {
-                    Articles = newsResponse.Articles ?? new List<Models.DTOs.ArticleDto>(),
+                    Articles = articles,
                     SelectedCountry = country,
                     SelectedCategory = category,
                     SourceChartJsonData = chartJsonData,
